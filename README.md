@@ -229,6 +229,13 @@ Created by a CA for future CAs. For questions or suggestions, create an issue on
 - Built with love for the CA community
 
 ---
+** Created By **
+** CA Tanmay Rajendra Bhavar (Nashik) **
+FCA, DISA (ICAI) | ICITSS/AICITSS/AURA Faculty
+
+"Let's connect and grow together! Feel free to reach out on 
+LinkedIn for professional networking, knowledge sharing, and 
+collaboration opportunities."
 
 **Happy Learning! 🎓**
 
