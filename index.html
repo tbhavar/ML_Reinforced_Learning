@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn Reinforcement Learning through interactive games designed for CA students">
+    <title>RL Quest - Learn Reinforcement Learning | For CA Students</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar with Gamification Elements -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <h1 class="logo">🎮 RL Quest</h1>
+            <div class="player-stats">
+                <div class="stat-item">
+                    <span class="stat-label">XP</span>
+                    <span class="stat-value" id="totalXP">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Level</span>
+                    <span class="stat-value" id="playerLevel">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">🔥 Streak</span>
+                    <span class="stat-value" id="streakCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <button class="badge-btn" onclick="toggleBadges()">🏆 Badges</button>
+                </div>
+            </div>
+        </div>
+        <div class="xp-progress-container">
+            <div class="xp-progress-bar" id="xpProgressBar"></div>
+            <span class="xp-progress-text" id="xpProgressText">0/100 XP to Level 2</span>
+        </div>
+    </nav>
+
+    <!-- Badges Modal -->
+    <div id="badgeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleBadges()">&times;</span>
+            <h2>🏆 Your Achievements</h2>
+            <div id="badgeGrid" class="badge-grid"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">Master Machine Learning Through Your CA Journey! 🚀</h1>
+            <p class="hero-subtitle">CA परीक्षा की तैयारी की तरह, मशीन भी सीखती है - गलतियों से और इनाम से!</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-num">3</span>
+                    <span>Interactive Games</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-num">15+</span>
+                    <span>Badges to Earn</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-num">100%</span>
+                    <span>Fun Learning</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Introduction Section -->
+        <section class="section">
+            <h2>🎯 What is Reinforcement Learning?</h2>
+            <div class="intro-card">
+                <p class="intro-text">
+                    Imagine you're preparing for CA Finals. हर बार जब आप practice problems solve करते हो और सही answer मिलता है, 
+                    तो आप motivated feel करते हो। गलत होने पर आप अपनी strategy change करते हो। 
+                    This is exactly how machines learn through <strong>Reinforcement Learning</strong>!
+                </p>
+                <div class="analogy-box">
+                    <h3>Real-World Example</h3>
+                    <p>जैसे एक CA student अपने exam strategy को improve करता है (कौनसे chapters पहले पढ़ें, कितना time दें), 
+                    वैसे ही RL में machine भी trial-and-error से सीखता है!</p>
+                </div>
+            </div>
+            <button class="cta-btn" onclick="unlockBadge('first_step'); addXP(10)">Start Learning +10 XP</button>
+        </section>
+
+        <!-- Core Concepts Section -->
+        <section class="section">
+            <h2>📚 Core RL Concepts (CA Style)</h2>
+            <div class="concepts-grid">
+                <div class="concept-card" onclick="revealConcept(this, 'agent')">
+                    <div class="concept-icon">🎓</div>
+                    <h3>Agent</h3>
+                    <p class="concept-preview">Click to learn more...</p>
+                    <p class="concept-detail hidden">
+                        <strong>The Decision Maker!</strong><br>
+                        आपकी तरह - जो CA student है या business owner। Agent वो है जो decisions लेता है।
+                        <br><em>Example: You deciding which chapter to study next</em>
+                    </p>
+                </div>
+
+                <div class="concept-card" onclick="revealConcept(this, 'environment')">
+                    <div class="concept-icon">🌍</div>
+                    <h3>Environment</h3>
+                    <p class="concept-preview">Click to learn more...</p>
+                    <p class="concept-detail hidden">
+                        <strong>The World Around You!</strong><br>
+                        Exam hall, market conditions, या GST regulations - जहाँ आप operate करते हो।
+                        <br><em>Example: The CA exam paper or business market</em>
+                    </p>
+                </div>
+
+                <div class="concept-card" onclick="revealConcept(this, 'state')">
+                    <div class="concept-icon">📊</div>
+                    <h3>State</h3>
+                    <p class="concept-preview">Click to learn more...</p>
+                    <p class="concept-detail hidden">
+                        <strong>Current Situation!</strong><br>
+                        अभी आप कहाँ हो - 5 chapters completed, 70% syllabus done, या ₹5L revenue.
+                        <br><em>Example: "I've completed Direct Tax, weak in Audit"</em>
+                    </p>
+                </div>
+
+                <div class="concept-card" onclick="revealConcept(this, 'action')">
+                    <div class="concept-icon">⚡</div>
+                    <h3>Action</h3>
+                    <p class="concept-preview">Click to learn more...</p>
+                    <p class="concept-detail hidden">
+                        <strong>Your Choices!</strong><br>
+                        Study more, take mock test, revise notes, या business में - pricing change, hire staff.
+                        <br><em>Example: "Study Audit for 3 hours" or "Increase service price"</em>
+                    </p>
+                </div>
+
+                <div class="concept-card" onclick="revealConcept(this, 'reward')">
+                    <div class="concept-icon">⭐</div>
+                    <h3>Reward</h3>
+                    <p class="concept-preview">Click to learn more...</p>
+                    <p class="concept-detail hidden">
+                        <strong>Feedback You Get!</strong><br>
+                        +10 marks for correct answer, -5 for wrong। Business में profit/loss।
+                        <br><em>Example: Mock test score increase = positive reward</em>
+                    </p>
+                </div>
+
+                <div class="concept-card" onclick="revealConcept(this, 'policy')">
+                    <div class="concept-icon">🎯</div>
+                    <h3>Policy</h3>
+                    <p class="concept-preview">Click to learn more...</p>
+                    <p class="concept-detail hidden">
+                        <strong>Your Strategy!</strong><br>
+                        कैसे decide करें क्या करना है। "Weak topics पर ज्यादा focus" = good policy!
+                        <br><em>Example: Your complete study plan/business strategy</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game 1: CA Exam Prep Simulator -->
+        <section class="section game-section">
+            <div class="game-header">
+                <h2>🎮 Game 1: CA Exam Prep Simulator</h2>
+                <div class="difficulty-selector">
+                    <label>Difficulty:</label>
+                    <select id="game1Difficulty" onchange="resetGame1()">
+                        <option value="easy">Easy (5x5 Grid)</option>
+                        <option value="medium" selected>Medium (7x7 Grid)</option>
+                        <option value="hard">Hard (10x10 Grid)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="game-description">
+                <p>Navigate through CA chapters to maximize your marks! 🎯</p>
+                <ul>
+                    <li>🟢 Green = Mastered Topics (+10 marks)</li>
+                    <li>🔴 Red = Weak Areas (-5 marks)</li>
+                    <li>⭐ Star = Chapter Complete (+20 marks)</li>
+                    <li>🎓 Student = You (the Agent)</li>
+                </ul>
+                <p><strong>Goal:</strong> Watch the AI learn the best path after multiple attempts!</p>
+            </div>
+            <div class="game-controls">
+                <button class="game-btn" onclick="runGame1Episode()">▶️ Run 1 Episode</button>
+                <button class="game-btn" onclick="trainGame1()">🚀 Auto-Train (10 Episodes)</button>
+                <button class="game-btn" onclick="resetGame1()">🔄 Reset</button>
+                <div class="game-stats">
+                    <span>Episode: <strong id="game1Episode">0</strong></span>
+                    <span>Total Reward: <strong id="game1Reward">0</strong></span>
+                    <span>Epsilon (Exploration): <strong id="game1Epsilon">1.00</strong></span>
+                </div>
+            </div>
+            <div id="game1Grid" class="grid-container"></div>
+            <div class="game-insights">
+                <h3>📈 Learning Progress</h3>
+                <canvas id="game1Chart" width="400" height="200"></canvas>
+            </div>
+            <div class="qtable-container">
+                <h3>🧠 Q-Table (Agent's Knowledge)</h3>
+                <p class="qtable-desc">This table shows what the agent has learned. Higher values = better actions!</p>
+                <div id="game1QTable" class="qtable-grid"></div>
+            </div>
+        </section>
+
+        <!-- Game 2: Business Decision Game -->
+        <section class="section game-section">
+            <div class="game-header">
+                <h2>🎮 Game 2: CA Practice Manager</h2>
+                <div class="difficulty-selector">
+                    <label>Market:</label>
+                    <select id="game2Difficulty">
+                        <option value="easy">Tier 3 City (Stable)</option>
+                        <option value="medium" selected>Tier 2 City (Competitive)</option>
+                        <option value="hard">Metro City (Volatile)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="game-description">
+                <p>Run your CA practice and make smart decisions! 💼</p>
+                <ul>
+                    <li>💰 Pricing: Low/Medium/High fees</li>
+                    <li>⚡ Service: Standard/Premium quality</li>
+                    <li>👥 Clients: Retain old vs Get new</li>
+                </ul>
+                <p><strong>Learn:</strong> How different decisions lead to different rewards!</p>
+            </div>
+            <div class="game-controls">
+                <button class="game-btn" onclick="makeDecision('low_price')">💵 Low Price</button>
+                <button class="game-btn" onclick="makeDecision('med_price')">💰 Medium Price</button>
+                <button class="game-btn" onclick="makeDecision('high_price')">💎 High Price</button>
+                <button class="game-btn" onclick="makeDecision('premium')">⭐ Premium Service</button>
+                <button class="game-btn" onclick="resetGame2()">🔄 Reset Practice</button>
+                <div class="game-stats">
+                    <span>Month: <strong id="game2Month">1</strong></span>
+                    <span>Revenue: ₹<strong id="game2Revenue">0</strong></span>
+                    <span>Clients: <strong id="game2Clients">5</strong></span>
+                </div>
+            </div>
+            <div id="game2Display" class="business-display">
+                <div class="business-meter">
+                    <h4>Practice Health</h4>
+                    <div class="meter-bar">
+                        <div id="healthBar" class="meter-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div id="game2Log" class="decision-log"></div>
+            </div>
+            <div class="game-insights">
+                <h3>📊 Revenue Trends</h3>
+                <canvas id="game2Chart" width="400" height="200"></canvas>
+            </div>
+        </section>
+
+        <!-- Game 3: Tax Notice Response Trainer -->
+        <section class="section game-section">
+            <div class="game-header">
+                <h2>🎮 Game 3: Tax Notice Response Trainer</h2>
+            </div>
+            <div class="game-description">
+                <p>Handle tax notices and learn the best response strategies! 📋</p>
+                <p><strong>Concept:</strong> Exploration vs Exploitation - कब नई strategy try करें, कब proven method use करें?</p>
+            </div>
+            <div id="game3Scenario" class="scenario-card">
+                <h3 id="noticeTitle">Loading scenario...</h3>
+                <p id="noticeDesc"></p>
+                <div class="scenario-options" id="scenarioOptions"></div>
+            </div>
+            <div class="game-controls">
+                <div class="game-stats">
+                    <span>Notices Handled: <strong id="noticesHandled">0</strong></span>
+                    <span>Success Rate: <strong id="successRate">0%</strong></span>
+                    <span>Strategy: <strong id="currentStrategy">Exploring</strong></span>
+                </div>
+                <button class="game-btn" onclick="loadNewNotice()">📨 New Notice</button>
+                <button class="game-btn" onclick="resetGame3()">🔄 Reset</button>
+            </div>
+            <div class="exploration-meter">
+                <h4>Exploration vs Exploitation Balance</h4>
+                <div class="meter-container">
+                    <span>Explore (Try New)</span>
+                    <div class="slider-bar">
+                        <div id="explorationSlider" class="slider-fill"></div>
+                    </div>
+                    <span>Exploit (Use Best)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Section -->
+        <section class="section">
+            <h2>🎯 Putting It All Together</h2>
+            <div class="summary-visual">
+                <div class="rl-cycle">
+                    <div class="cycle-step">
+                        <div class="cycle-icon">🎓</div>
+                        <h4>1. Agent Observes</h4>
+                        <p>Current State</p>
+                    </div>
+                    <div class="cycle-arrow">→</div>
+                    <div class="cycle-step">
+                        <div class="cycle-icon">⚡</div>
+                        <h4>2. Takes Action</h4>
+                        <p>Based on Policy</p>
+                    </div>
+                    <div class="cycle-arrow">→</div>
+                    <div class="cycle-step">
+                        <div class="cycle-icon">⭐</div>
+                        <h4>3. Gets Reward</h4>
+                        <p>Feedback</p>
+                    </div>
+                    <div class="cycle-arrow">→</div>
+                    <div class="cycle-step">
+                        <div class="cycle-icon">🧠</div>
+                        <h4>4. Learns & Updates</h4>
+                        <p>Improve Policy</p>
+                    </div>
+                </div>
+            </div>
+            <div class="key-takeaways">
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>RL is learning through <strong>trial and error</strong> - mistakes se seekhna!</li>
+                    <li><strong>Rewards</strong> guide the learning - जैसे marks guide करते हैं study को</li>
+                    <li><strong>Balance</strong> exploration (new things try करना) and exploitation (best को use करना)</li>
+                    <li>Over time, agent learns the <strong>optimal policy</strong> - best strategy!</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Real-World Applications -->
+        <section class="section">
+            <h2>💼 RL in Finance & CA Field</h2>
+            <div class="applications-grid">
+                <div class="app-card">
+                    <h3>🤖 Algo Trading</h3>
+                    <p>RL algorithms decide when to buy/sell stocks to maximize profit - like you deciding when to book profit!</p>
+                </div>
+                <div class="app-card">
+                    <h3>📊 Portfolio Management</h3>
+                    <p>Optimal asset allocation based on market conditions and risk tolerance.</p>
+                </div>
+                <div class="app-card">
+                    <h3>🔍 Fraud Detection</h3>
+                    <p>Banks use RL to identify suspicious transactions and prevent fraud.</p>
+                </div>
+                <div class="app-card">
+                    <h3>💰 Credit Scoring</h3>
+                    <p>Dynamic credit limit adjustments based on customer behavior patterns.</p>
+                </div>
+                <div class="app-card">
+                    <h3>🎯 Tax Optimization</h3>
+                    <p>AI systems that learn optimal tax-saving strategies within legal frameworks.</p>
+                </div>
+                <div class="app-card">
+                    <h3>📈 Resource Allocation</h3>
+                    <p>CA firms using RL to optimally assign staff to different client projects.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section">
+            <h2>📝 Test Your Knowledge</h2>
+            <div id="quizContainer" class="quiz-container">
+                <!-- Quiz questions will be dynamically loaded -->
+            </div>
+            <button class="cta-btn" onclick="startQuiz()">Take Quiz (50 XP)</button>
+        </section>
+
+        <!-- Certificate Section -->
+        <section class="section certificate-section">
+            <h2>🎓 Earn Your Certificate</h2>
+            <p>Complete all games and quiz to unlock your RL mastery certificate!</p>
+            <div class="certificate-requirements">
+                <div class="req-item" id="req1">✓ Complete Game 1</div>
+                <div class="req-item" id="req2">✓ Complete Game 2</div>
+                <div class="req-item" id="req3">✓ Complete Game 3</div>
+                <div class="req-item" id="req4">✓ Pass Quiz (80%+)</div>
+                <div class="req-item" id="req5">✓ Reach Level 5</div>
+            </div>
+            <button class="cta-btn" id="certBtn" onclick="generateCertificate()" disabled>🏆 Generate Certificate</button>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section class="section">
+            <h2>🏆 Local Leaderboard</h2>
+            <p class="leaderboard-desc">Top learners (stored in your browser)</p>
+            <div id="leaderboard" class="leaderboard-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Level</th>
+                            <th>XP</th>
+                            <th>Badges</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+            </div>
+            <button class="game-btn" onclick="addToLeaderboard()">💾 Save My Progress</button>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Continue Your Learning Journey</h3>
+            <div class="resources">
+                <a href="https://www.youtube.com/results?search_query=reinforcement+learning+tutorial" target="_blank">📺 YouTube Tutorials</a>
+                <a href="https://github.com/topics/reinforcement-learning" target="_blank">💻 GitHub Projects</a>
+                <a href="https://www.coursera.org/learn/fundamentals-of-reinforcement-learning" target="_blank">🎓 Free Courses</a>
+            </div>
+            <p class="disclaimer">Educational purpose only | Built for CA students with ❤️</p>
+            <p class="creator">Created by a CA for future CAs | <a href="https://github.com" target="_blank">View Source Code</a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
