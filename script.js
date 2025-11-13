@@ -20,7 +20,7 @@ const BADGES = {
     game2_starter: { name: "Business Starter", icon: "💼", desc: "Made 10 decisions in Game 2" },
     game2_mogul: { name: "Business Mogul", icon: "💰", desc: "Reached ₹50K revenue" },
     game3_novice: { name: "Notice Handler", icon: "📋", desc: "Handled 5 tax notices" },
-    game3_expert: { name: "Tax Expert", icon: "⚖️", desc: "90% success rate with 10+ notices" },
+    game3_expert: { name: "Tax Expert", icon: "⚖️", desc: "80% success rate with 10+ notices" },
     quiz_taker: { name: "Quiz Taker", icon: "📝", desc: "Attempted the quiz" },
     quiz_master: { name: "Quiz Master", icon: "🎓", desc: "Scored 80%+ on quiz" },
     level_5: { name: "Level 5", icon: "⭐", desc: "Reached level 5" },
@@ -192,7 +192,8 @@ let game1State = {
     epsilon: 1.0,
     rewardHistory: [],
     currentReward: 0,
-    isTraining: false
+    isTraining: false,
+    isRunning: false
 };
 
 function initializeGames() {
@@ -209,6 +210,8 @@ function resetGame1() {
     game1State.epsilon = 1.0;
     game1State.rewardHistory = [];
     game1State.currentReward = 0;
+    game1State.isTraining = false;
+    game1State.isRunning = false;
 
     createGrid();
     updateGame1UI();
@@ -247,57 +250,76 @@ function createGrid() {
     }
 }
 
-function runGame1Episode() {
-    if (game1State.isTraining) return;
+async function runGame1Episode() {
+    if (game1State.isRunning) return;
+    game1State.isRunning = true;
 
     const cells = document.querySelectorAll('#game1Grid .grid-cell');
     let position = 0;
     let episodeReward = 0;
     const path = [position];
+    let steps = 0;
+    const maxSteps = game1State.gridSize * game1State.gridSize * 2;
 
-    const moveInterval = setInterval(() => {
-        // Choose action (epsilon-greedy)
-        const action = chooseAction(position);
-        const newPosition = getNewPosition(position, action);
+    return new Promise((resolve) => {
+        const moveInterval = setInterval(() => {
+            steps++;
 
-        if (newPosition === position) {
-            // Invalid move
-            return;
-        }
+            // Prevent infinite loops
+            if (steps > maxSteps) {
+                clearInterval(moveInterval);
+                completeEpisode(episodeReward);
+                game1State.isRunning = false;
+                resolve();
+                return;
+            }
 
-        // Get reward
-        const cell = cells[newPosition];
-        const reward = cell.classList.contains('goal') ? 20 : 
-                      parseInt(cell.dataset.reward) || 0;
-        episodeReward += reward;
+            // Choose action (epsilon-greedy)
+            const action = chooseAction(position);
+            const newPosition = getNewPosition(position, action);
 
-        // Update Q-table
-        updateQTable(position, action, reward, newPosition);
+            if (newPosition === position) {
+                // Invalid move, try again
+                return;
+            }
 
-        // Move agent
-        cells[position].classList.remove('agent');
-        cells[position].textContent = '';
-        cells[newPosition].classList.add('agent');
-        cells[newPosition].textContent = '🎓';
+            // Get reward
+            const cell = cells[newPosition];
+            const reward = cell.classList.contains('goal') ? 20 : 
+                          parseInt(cell.dataset.reward) || 0;
+            episodeReward += reward;
 
-        position = newPosition;
-        path.push(position);
+            // Update Q-table
+            updateQTable(position, action, reward, newPosition);
 
-        // Check if goal reached
-        if (cells[position].classList.contains('goal')) {
-            clearInterval(moveInterval);
-            completeEpisode(episodeReward);
+            // Move agent
+            cells[position].classList.remove('agent');
+            cells[position].textContent = '';
+            cells[newPosition].classList.add('agent');
+            cells[newPosition].textContent = '🎓';
 
-            // Highlight path
-            setTimeout(() => {
-                path.forEach(p => {
-                    if (!cells[p].classList.contains('goal') && !cells[p].classList.contains('agent')) {
-                        cells[p].classList.add('path');
-                    }
-                });
-            }, 500);
-        }
-    }, 300);
+            position = newPosition;
+            path.push(position);
+
+            // Check if goal reached
+            if (cells[position].classList.contains('goal')) {
+                clearInterval(moveInterval);
+                completeEpisode(episodeReward);
+
+                // Highlight path
+                setTimeout(() => {
+                    path.forEach(p => {
+                        if (!cells[p].classList.contains('goal') && !cells[p].classList.contains('agent')) {
+                            cells[p].classList.add('path');
+                        }
+                    });
+                }, 500);
+
+                game1State.isRunning = false;
+                resolve();
+            }
+        }, 200);
+    });
 }
 
 function chooseAction(state) {
@@ -359,24 +381,29 @@ function completeEpisode(reward) {
         unlockBadge('game1_pro');
         gameState.game1Complete = true;
         saveGameState();
+        showToast('🎉 Game 1 Completed! You can now earn the certificate!');
     }
 
     // Reset grid for next episode
-    setTimeout(() => createGrid(), 2000);
+    setTimeout(() => createGrid(), 1500);
 }
 
 async function trainGame1() {
     if (game1State.isTraining) return;
+
     game1State.isTraining = true;
+    const trainBtn = document.getElementById('trainBtn');
+    trainBtn.disabled = true;
+    trainBtn.textContent = 'Training...';
 
     for (let i = 0; i < 10; i++) {
-        await new Promise(resolve => {
-            runGame1Episode();
-            setTimeout(resolve, 2000);
-        });
+        await runGame1Episode();
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     game1State.isTraining = false;
+    trainBtn.disabled = false;
+    trainBtn.textContent = '🚀 Auto-Train (10 Episodes)';
 }
 
 function updateGame1UI() {
@@ -387,7 +414,8 @@ function updateGame1UI() {
 
 function renderQTable() {
     const container = document.getElementById('game1QTable');
-    container.innerHTML = '<p>Showing Q-values for key positions:</p>';
+    container.innerHTML = '<p><strong>Q-Table Values Explained:</strong></p>';
+    container.innerHTML += '<p style="margin-bottom: 1rem;">Each row shows a position number and the expected reward for moving Up (↑), Right (→), Down (↓), or Left (←). Green cells indicate good moves (positive values), and the agent learns these through experience!</p>';
 
     const keyStates = [0, 1, 2, game1State.gridSize, game1State.gridSize * game1State.gridSize - 1];
 
@@ -475,7 +503,9 @@ let game2State = {
     clients: 5,
     health: 50,
     decisions: [],
-    revenueHistory: []
+    revenueHistory: [],
+    lastDecision: null,
+    consecutiveCount: 0
 };
 
 function resetGame2() {
@@ -485,10 +515,12 @@ function resetGame2() {
         clients: 5,
         health: 50,
         decisions: [],
-        revenueHistory: []
+        revenueHistory: [],
+        lastDecision: null,
+        consecutiveCount: 0
     };
     updateGame2UI();
-    document.getElementById('game2Log').innerHTML = '<p>Start making decisions...</p>';
+    document.getElementById('game2Log').innerHTML = '<p>Start making decisions... Remember: Variety is key!</p>';
 }
 
 function makeDecision(decision) {
@@ -497,32 +529,55 @@ function makeDecision(decision) {
     let message = '';
     let clientChange = 0;
 
+    // Check for consecutive same decisions and apply diminishing returns
+    let multiplier = 1.0;
+    if (decision === game2State.lastDecision) {
+        game2State.consecutiveCount++;
+        // Diminishing returns: reduce by 20% for each consecutive same decision
+        multiplier = Math.max(0.2, 1.0 - (game2State.consecutiveCount * 0.2));
+        if (game2State.consecutiveCount >= 3) {
+            message += '⚠️ Warning: Repeating same strategy has diminishing returns! ';
+        }
+    } else {
+        game2State.consecutiveCount = 0;
+        game2State.lastDecision = decision;
+    }
+
     switch(decision) {
         case 'low_price':
             reward = difficulty === 'easy' ? 5000 : difficulty === 'hard' ? 3000 : 4000;
             clientChange = 2;
-            message = '💵 Low pricing attracted new clients!';
+            message += '💵 Low pricing attracted new clients!';
             break;
         case 'med_price':
             reward = difficulty === 'easy' ? 8000 : difficulty === 'hard' ? 5000 : 7000;
             clientChange = 0;
-            message = '💰 Balanced pricing maintained stability.';
+            message += '💰 Balanced pricing maintained stability.';
             break;
         case 'high_price':
             reward = difficulty === 'easy' ? 12000 : difficulty === 'hard' ? 6000 : 10000;
             clientChange = -1;
-            message = '💎 Premium pricing increased revenue but lost a client.';
+            message += '💎 Premium pricing increased revenue but lost a client.';
             break;
         case 'premium':
             reward = difficulty === 'easy' ? 15000 : difficulty === 'hard' ? 8000 : 12000;
             clientChange = 1;
-            message = '⭐ Premium service impressed clients!';
+            message += '⭐ Premium service impressed clients!';
             break;
+    }
+
+    // Apply diminishing returns multiplier
+    reward = Math.floor(reward * multiplier);
+
+    // Add penalty message if multiplier is applied
+    if (multiplier < 1.0) {
+        message += ` (${Math.round(multiplier * 100)}% effectiveness due to repetition)`;
     }
 
     game2State.month++;
     game2State.revenue += reward;
     game2State.clients += clientChange;
+    game2State.clients = Math.max(1, game2State.clients); // At least 1 client
     game2State.health = Math.min(100, Math.max(0, 
         game2State.health + (reward > 7000 ? 10 : -5)));
     game2State.decisions.push(decision);
@@ -539,6 +594,7 @@ function makeDecision(decision) {
         unlockBadge('game2_mogul');
         gameState.game2Complete = true;
         saveGameState();
+        showToast('🎉 Game 2 Completed! You can now earn the certificate!');
     }
 }
 
@@ -703,10 +759,11 @@ function handleResponse(optionIndex) {
 
     if (game3State.noticesHandled === 5) unlockBadge('game3_novice');
     if (game3State.noticesHandled >= 10 && 
-        (game3State.successCount / game3State.noticesHandled) >= 0.9) {
+        (game3State.successCount / game3State.noticesHandled) >= 0.8) {
         unlockBadge('game3_expert');
         gameState.game3Complete = true;
         saveGameState();
+        showToast('🎉 Game 3 Completed! You can now earn the certificate!');
     }
 
     setTimeout(loadNewNotice, 2000);
@@ -867,20 +924,75 @@ function generateCertificate() {
     if (!name) return;
 
     const certHTML = `
-        <div style="background: white; padding: 3rem; border: 10px solid gold; text-align: center; max-width: 600px; margin: 2rem auto;">
-            <h1 style="color: #667eea; font-size: 2.5rem;">🏆 Certificate of Achievement 🏆</h1>
-            <p style="font-size: 1.2rem; margin: 2rem 0;">This certifies that</p>
-            <h2 style="color: #764ba2; font-size: 2rem;">${name}</h2>
-            <p style="font-size: 1.2rem; margin: 2rem 0;">has successfully completed</p>
-            <h3 style="color: #667eea; font-size: 1.5rem;">RL Quest: Reinforcement Learning Mastery</h3>
-            <p style="margin: 2rem 0;">Completed all games, achieved Level ${gameState.level}, and earned ${Object.keys(gameState.badges).length} badges!</p>
-            <p style="color: #666;">Date: ${new Date().toLocaleDateString()}</p>
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: 'Georgia', serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    margin: 0;
+                }
+                .certificate {
+                    background: white;
+                    padding: 3rem;
+                    border: 15px solid gold;
+                    text-align: center;
+                    max-width: 700px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                }
+                h1 {
+                    color: #667eea;
+                    font-size: 2.5rem;
+                    margin-bottom: 1rem;
+                }
+                .name {
+                    color: #764ba2;
+                    font-size: 2.5rem;
+                    font-weight: bold;
+                    margin: 2rem 0;
+                    border-bottom: 3px solid #764ba2;
+                    padding-bottom: 0.5rem;
+                }
+                .stats {
+                    margin: 2rem 0;
+                    font-size: 1.1rem;
+                }
+                .footer {
+                    margin-top: 2rem;
+                    color: #666;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="certificate">
+                <h1>🏆 Certificate of Achievement 🏆</h1>
+                <p style="font-size: 1.2rem; margin: 2rem 0;">This certifies that</p>
+                <div class="name">${name}</div>
+                <p style="font-size: 1.2rem; margin: 2rem 0;">has successfully completed</p>
+                <h2 style="color: #667eea; font-size: 1.8rem;">RL Quest: Reinforcement Learning Mastery</h2>
+                <div class="stats">
+                    <p>✓ Completed all three interactive games</p>
+                    <p>✓ Achieved Level ${gameState.level}</p>
+                    <p>✓ Earned ${Object.keys(gameState.badges).length} badges</p>
+                    <p>✓ Total XP: ${gameState.xp}</p>
+                </div>
+                <div class="footer">
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p style="margin-top: 1rem;">Created by CA Tanmay Rajendra Bhavar (Nashik)<br>FCA, DISA (ICAI) | ICITSS/AICITSS/AURA Faculty</p>
+                </div>
+            </div>
+        </body>
+        </html>
     `;
 
     const win = window.open('', '_blank');
     win.document.write(certHTML);
-    win.document.title = 'RL Quest Certificate';
+    win.document.title = 'RL Quest Certificate - ' + name;
 
     addXP(100);
     showToast('🎓 Certificate generated! You can print or save it.');
