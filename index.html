@@ -51,7 +51,7 @@
         <!-- Hero Section -->
         <section class="hero">
             <h1 class="hero-title">Master Machine Learning Through Your CA Journey! 🚀</h1>
-            <p class="hero-subtitle">CA परीक्षा की तैयारी की तरह, मशीन भी सीखती है - गलतियों से और इनाम से!</p>
+            <p class="hero-subtitle">Just like preparing for CA exams, machines also learn from mistakes and rewards!</p>
             <div class="hero-stats">
                 <div class="hero-stat">
                     <span class="hero-stat-num">3</span>
@@ -73,14 +73,14 @@
             <h2>🎯 What is Reinforcement Learning?</h2>
             <div class="intro-card">
                 <p class="intro-text">
-                    Imagine you're preparing for CA Finals. हर बार जब आप practice problems solve करते हो और सही answer मिलता है, 
-                    तो आप motivated feel करते हो। गलत होने पर आप अपनी strategy change करते हो। 
+                    Imagine you're preparing for CA Finals. Every time you solve practice problems and get the correct answer, 
+                    you feel motivated. When you make mistakes, you adjust your strategy. 
                     This is exactly how machines learn through <strong>Reinforcement Learning</strong>!
                 </p>
                 <div class="analogy-box">
                     <h3>Real-World Example</h3>
-                    <p>जैसे एक CA student अपने exam strategy को improve करता है (कौनसे chapters पहले पढ़ें, कितना time दें), 
-                    वैसे ही RL में machine भी trial-and-error से सीखता है!</p>
+                    <p>Just as a CA student improves their exam strategy (which chapters to study first, how much time to allocate), 
+                    similarly in RL, machines also learn through trial-and-error!</p>
                 </div>
             </div>
             <button class="cta-btn" onclick="unlockBadge('first_step'); addXP(10)">Start Learning +10 XP</button>
@@ -96,7 +96,7 @@
                     <p class="concept-preview">Click to learn more...</p>
                     <p class="concept-detail hidden">
                         <strong>The Decision Maker!</strong><br>
-                        आपकी तरह - जो CA student है या business owner। Agent वो है जो decisions लेता है।
+                        Like you - the CA student or business owner. The agent is the one who makes decisions.
                         <br><em>Example: You deciding which chapter to study next</em>
                     </p>
                 </div>
@@ -107,7 +107,7 @@
                     <p class="concept-preview">Click to learn more...</p>
                     <p class="concept-detail hidden">
                         <strong>The World Around You!</strong><br>
-                        Exam hall, market conditions, या GST regulations - जहाँ आप operate करते हो।
+                        The exam hall, market conditions, or GST regulations - where you operate.
                         <br><em>Example: The CA exam paper or business market</em>
                     </p>
                 </div>
@@ -118,7 +118,7 @@
                     <p class="concept-preview">Click to learn more...</p>
                     <p class="concept-detail hidden">
                         <strong>Current Situation!</strong><br>
-                        अभी आप कहाँ हो - 5 chapters completed, 70% syllabus done, या ₹5L revenue.
+                        Where you are right now - 5 chapters completed, 70% syllabus done, or ₹5L revenue.
                         <br><em>Example: "I've completed Direct Tax, weak in Audit"</em>
                     </p>
                 </div>
@@ -129,7 +129,7 @@
                     <p class="concept-preview">Click to learn more...</p>
                     <p class="concept-detail hidden">
                         <strong>Your Choices!</strong><br>
-                        Study more, take mock test, revise notes, या business में - pricing change, hire staff.
+                        Study more, take mock test, revise notes, or in business - change pricing, hire staff.
                         <br><em>Example: "Study Audit for 3 hours" or "Increase service price"</em>
                     </p>
                 </div>
@@ -140,7 +140,7 @@
                     <p class="concept-preview">Click to learn more...</p>
                     <p class="concept-detail hidden">
                         <strong>Feedback You Get!</strong><br>
-                        +10 marks for correct answer, -5 for wrong। Business में profit/loss।
+                        +10 marks for correct answer, -5 for wrong. In business - profit/loss.
                         <br><em>Example: Mock test score increase = positive reward</em>
                     </p>
                 </div>
@@ -151,7 +151,7 @@
                     <p class="concept-preview">Click to learn more...</p>
                     <p class="concept-detail hidden">
                         <strong>Your Strategy!</strong><br>
-                        कैसे decide करें क्या करना है। "Weak topics पर ज्यादा focus" = good policy!
+                        How to decide what to do. "Focus more on weak topics" = good policy!
                         <br><em>Example: Your complete study plan/business strategy</em>
                     </p>
                 </div>
@@ -179,11 +179,11 @@
                     <li>⭐ Star = Chapter Complete (+20 marks)</li>
                     <li>🎓 Student = You (the Agent)</li>
                 </ul>
-                <p><strong>Goal:</strong> Watch the AI learn the best path after multiple attempts!</p>
+                <p><strong>Goal:</strong> Watch the AI learn the best path after multiple attempts! Complete 20 episodes to master this game.</p>
             </div>
             <div class="game-controls">
                 <button class="game-btn" onclick="runGame1Episode()">▶️ Run 1 Episode</button>
-                <button class="game-btn" onclick="trainGame1()">🚀 Auto-Train (10 Episodes)</button>
+                <button class="game-btn" onclick="trainGame1()" id="trainBtn">🚀 Auto-Train (10 Episodes)</button>
                 <button class="game-btn" onclick="resetGame1()">🔄 Reset</button>
                 <div class="game-stats">
                     <span>Episode: <strong id="game1Episode">0</strong></span>
@@ -198,7 +198,8 @@
             </div>
             <div class="qtable-container">
                 <h3>🧠 Q-Table (Agent's Knowledge)</h3>
-                <p class="qtable-desc">This table shows what the agent has learned. Higher values = better actions!</p>
+                <p class="qtable-desc">This table shows what the agent has learned. Each cell shows the expected reward for taking an action (↑↓←→) from a specific position. Higher values (green) = better actions!</p>
+                <p class="qtable-desc"><strong>How to read:</strong> "Pos 0" means starting position. The numbers show how valuable each direction is. Positive numbers are good moves, negative are bad. The agent learns these values through experience!</p>
                 <div id="game1QTable" class="qtable-grid"></div>
             </div>
         </section>
@@ -221,9 +222,10 @@
                 <ul>
                     <li>💰 Pricing: Low/Medium/High fees</li>
                     <li>⚡ Service: Standard/Premium quality</li>
-                    <li>👥 Clients: Retain old vs Get new</li>
+                    <li>👥 Clients: Balance between retention and growth</li>
+                    <li>⚠️ Warning: Consecutive same decisions have diminishing returns!</li>
                 </ul>
-                <p><strong>Learn:</strong> How different decisions lead to different rewards!</p>
+                <p><strong>Learn:</strong> How different decisions lead to different rewards! Reach ₹50,000 revenue to complete this game.</p>
             </div>
             <div class="game-controls">
                 <button class="game-btn" onclick="makeDecision('low_price')">💵 Low Price</button>
@@ -259,7 +261,8 @@
             </div>
             <div class="game-description">
                 <p>Handle tax notices and learn the best response strategies! 📋</p>
-                <p><strong>Concept:</strong> Exploration vs Exploitation - कब नई strategy try करें, कब proven method use करें?</p>
+                <p><strong>Concept:</strong> Exploration vs Exploitation - when to try new strategies vs use proven methods?</p>
+                <p><strong>Goal:</strong> Handle 10 notices with 80%+ success rate to complete this game.</p>
             </div>
             <div id="game3Scenario" class="scenario-card">
                 <h3 id="noticeTitle">Loading scenario...</h3>
@@ -320,10 +323,10 @@
             <div class="key-takeaways">
                 <h3>Key Takeaways</h3>
                 <ul>
-                    <li>RL is learning through <strong>trial and error</strong> - mistakes se seekhna!</li>
-                    <li><strong>Rewards</strong> guide the learning - जैसे marks guide करते हैं study को</li>
-                    <li><strong>Balance</strong> exploration (new things try करना) and exploitation (best को use करना)</li>
-                    <li>Over time, agent learns the <strong>optimal policy</strong> - best strategy!</li>
+                    <li>RL is learning through <strong>trial and error</strong> - learning from mistakes!</li>
+                    <li><strong>Rewards</strong> guide the learning - just like exam marks guide your study approach</li>
+                    <li><strong>Balance</strong> exploration (trying new things) and exploitation (using what works best)</li>
+                    <li>Over time, the agent learns the <strong>optimal policy</strong> - the best strategy!</li>
                 </ul>
             </div>
         </section>
@@ -373,9 +376,9 @@
             <h2>🎓 Earn Your Certificate</h2>
             <p>Complete all games and quiz to unlock your RL mastery certificate!</p>
             <div class="certificate-requirements">
-                <div class="req-item" id="req1">✓ Complete Game 1</div>
-                <div class="req-item" id="req2">✓ Complete Game 2</div>
-                <div class="req-item" id="req3">✓ Complete Game 3</div>
+                <div class="req-item" id="req1">✓ Complete Game 1 (20 episodes)</div>
+                <div class="req-item" id="req2">✓ Complete Game 2 (₹50K revenue)</div>
+                <div class="req-item" id="req3">✓ Complete Game 3 (10 notices, 80%+ success)</div>
                 <div class="req-item" id="req4">✓ Pass Quiz (80%+)</div>
                 <div class="req-item" id="req5">✓ Reach Level 5</div>
             </div>
@@ -414,8 +417,23 @@
                 <a href="https://github.com/topics/reinforcement-learning" target="_blank">💻 GitHub Projects</a>
                 <a href="https://www.coursera.org/learn/fundamentals-of-reinforcement-learning" target="_blank">🎓 Free Courses</a>
             </div>
-            <p class="disclaimer">Educational purpose only | Built for CA students with ❤️</p>
-            <p class="creator">Created by a CA for future CAs | <a href="https://github.com" target="_blank">View Source Code</a></p>
+
+            <div class="creator-section">
+                <h3>Created By</h3>
+                <p class="creator-name"><strong>CA Tanmay Rajendra Bhavar (Nashik)</strong></p>
+                <p class="creator-credentials">FCA, DISA (ICAI) | ICITSS/AICITSS/AURA Faculty</p>
+                <p class="creator-cta">Let's connect and grow together! Feel free to reach out on LinkedIn for professional networking, knowledge sharing, and collaboration opportunities.</p>
+                <a href="https://www.linkedin.com/in/tbhavar" target="_blank" class="linkedin-btn">
+                    🔗 Connect on LinkedIn
+                </a>
+            </div>
+
+            <div class="disclaimer">
+                <h4>⚠️ Disclaimer</h4>
+                <p>This is an educational tool created for learning purposes. The games and simulations are simplified representations of Reinforcement Learning concepts and should be used as an introduction to the subject. For professional applications, please refer to comprehensive academic resources and expert guidance. The tax scenarios presented are fictional and for illustrative purposes only.</p>
+            </div>
+
+            <p class="copyright">© 2025 RL Quest | Educational purpose only | Built for CA students with ❤️</p>
         </div>
     </footer>
 
