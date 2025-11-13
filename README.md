@@ -223,7 +223,7 @@ Created by a CA for future CAs. For questions or suggestions, create an issue on
 
 ## 🙏 Acknowledgments
 
-- Designed for 18-year-old CA students in tier 3 Indian cities
+- Designed for CA students
 - Uses relatable CA/business analogies
 - Incorporates Hindi-English code-mixing for authenticity
 - Built with love for the CA community
